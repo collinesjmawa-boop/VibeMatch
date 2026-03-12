@@ -71,44 +71,47 @@ io.on('connection', (socket) => {
     }
   });
 
-  // When a user successfully navigates to the Room route
-  socket.on('join_room', (roomId) => {
-    socket.join(roomId);
-    console.log(`Socket ${socket.id} fully joined room ${roomId}`);
-    
-    // Notify others in the room
-    socket.to(roomId).emit('user_joined_room', { id: socket.id });
+  // WebRTC Signaling
+  socket.on('webrtc_signal', (data) => {
+    const { roomId, type } = data;
+    // Relay the signal to the other participant in the same room
+    socket.to(roomId).emit('webrtc_signal', data);
   });
 
-  // Handle chat messages
+  // Simple call invitation (Phase 2 lobby)
+  socket.on('send_call_invite', (data) => {
+    const { toUid, fromName, roomId, type, vibe } = data;
+    // In a full production app, you'd map UID to socket IDs.
+    // For this trial, we'll broadcast to the vibe room, and only the target UID will show the popup.
+    io.emit('receive_call_invite', { toUid, fromName, roomId, type, vibe });
+  });
+
+  socket.on('join_room', (roomId) => {
+    socket.join(roomId);
+    console.log(`Socket ${socket.id} joined room ${roomId}`);
+  });
+
   socket.on('send_message', (data) => {
-    const { roomId, text, senderId, senderName } = data;
-    // Broadcast to everyone else in the room
+    const { roomId, text, senderName } = data;
     socket.to(roomId).emit('receive_message', {
       id: uuidv4(),
       text,
-      senderId,
       senderName,
+      senderId: socket.id,
       timestamp: Date.now()
     });
   });
 
   socket.on('leave_room', (roomId) => {
     socket.leave(roomId);
-    socket.to(roomId).emit('user_left', { id: socket.id });
+    socket.to(roomId).emit('user_left');
   });
 
   socket.on('disconnect', () => {
     console.log(`User disconnected: ${socket.id}`);
-    
-    // Remove from any queues if they were waiting
-    for (const vibe in queues) {
-      queues[vibe] = queues[vibe].filter(s => s.id !== socket.id);
-    }
-    
-    // Handle leaving active rooms could go here
   });
 });
+
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
