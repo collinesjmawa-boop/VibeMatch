@@ -1,8 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
-import { auth, db } from '../firebase';
+import { 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  updateProfile,
+  signInWithPopup 
+} from 'firebase/auth';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { auth, db, googleProvider } from '../firebase';
 import './Auth.css';
 
 export default function Auth() {
@@ -13,6 +18,32 @@ export default function Auth() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const handleGoogleSignIn = async () => {
+    setError('');
+    setLoading(true);
+    try {
+      const { user } = await signInWithPopup(auth, googleProvider);
+      
+      // Check if user exists in Firestore, if not create record
+      const userRef = doc(db, 'users', user.uid);
+      const userSnap = await getDoc(userRef);
+      
+      if (!userSnap.exists()) {
+        await setDoc(userRef, {
+          uid: user.uid,
+          name: user.displayName,
+          email: user.email,
+          createdAt: Date.now()
+        });
+      }
+      
+      navigate('/vibe');
+    } catch (err) {
+      setError(err.message.replace('Firebase: ', ''));
+    }
+    setLoading(false);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,6 +91,13 @@ export default function Auth() {
           </button>
         </div>
 
+        <button className="google-btn" onClick={handleGoogleSignIn} disabled={loading}>
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
+          Continue with Google
+        </button>
+
+        <div className="or-divider"><span>OR</span></div>
+
         <form className="auth-form" onSubmit={handleSubmit}>
           {!isLogin && (
             <input
@@ -98,3 +136,4 @@ export default function Auth() {
     </div>
   );
 }
+
