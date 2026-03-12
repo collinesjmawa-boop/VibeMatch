@@ -1,0 +1,134 @@
+.home-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.main-panel {
+  max-width: 600px;
+  width: 100%;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.logo-container {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.logo-text {
+  font-size: 3rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent-default), #c084fc);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+  text-shadow: 0 4px 15px rgba(139, 92, 246, 0.15);
+}
+
+.logo-sub {
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-section h2 {
+  font-size: 1.25rem;
+  color: var(--text-main);
+  opacity: 0.9;
+}
+
+/* Vibe Grid */
+.vibe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 16px;
+}
+
+/* Mood Selection Buttons */
+.vibe-btn {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-md);
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  color: var(--text-main);
+  box-shadow: var(--shadow-sm);
+}
+
+.vibe-btn:hover {
+  background: #f8fafc;
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: #cbd5e1;
+}
+
+.vibe-btn.active {
+  background: #f0f9ff;
+  border-color: var(--vibe-color);
+  box-shadow: 0 0 0 2px var(--vibe-color), var(--shadow-sm);
+  transform: scale(1.05);
+}
+
+.vibe-emoji {
+  font-size: 2.5rem;
+}
+
+.vibe-label {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.or-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: var(--text-muted);
+  margin: 8px 0;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.or-divider::before, .or-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.05);
+}
+
+.or-divider span {
+  padding: 0 16px;
+}
+
+.join-btn {
+  margin-top: 24px;
+  height: 56px;
+  font-size: 1.25rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.join-btn:disabled {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.3);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
