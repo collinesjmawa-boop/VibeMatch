@@ -4,7 +4,8 @@ import {
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
   updateProfile,
-  signInWithPopup 
+  signInWithPopup,
+  sendPasswordResetEmail
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db, googleProvider } from '../firebase';
@@ -15,12 +16,15 @@ export default function Auth() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleGoogleSignIn = async () => {
     setError('');
+    setMessage('');
     setLoading(true);
     try {
       const { user } = await signInWithPopup(auth, googleProvider);
@@ -45,9 +49,27 @@ export default function Auth() {
     setLoading(false);
   };
 
+  const handleResetPassword = async () => {
+    if (!email) {
+      setError('Please enter your email to reset password.');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    setMessage('');
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setMessage('Password reset email sent! Check your inbox.');
+    } catch (err) {
+      setError(err.message.replace('Firebase: ', ''));
+    }
+    setLoading(false);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setMessage('');
     setLoading(true);
     try {
       if (isLogin) {
@@ -83,10 +105,10 @@ export default function Auth() {
         </div>
 
         <div className="auth-tabs">
-          <button className={`auth-tab ${!isLogin ? 'active' : ''}`} onClick={() => setIsLogin(false)}>
+          <button className={`auth-tab ${!isLogin ? 'active' : ''}`} onClick={() => { setIsLogin(false); setError(''); setMessage(''); }}>
             Create Account
           </button>
-          <button className={`auth-tab ${isLogin ? 'active' : ''}`} onClick={() => setIsLogin(true)}>
+          <button className={`auth-tab ${isLogin ? 'active' : ''}`} onClick={() => { setIsLogin(true); setError(''); setMessage(''); }}>
             Sign In
           </button>
         </div>
@@ -116,14 +138,33 @@ export default function Auth() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-          <input
-            type="password"
-            className="input-field"
-            placeholder="Password (min 6 characters)"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <div className="password-input-wrapper">
+            <input
+              type={showPassword ? "text" : "password"}
+              className="input-field password-input"
+              placeholder="Password (min 6 characters)"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button 
+              type="button" 
+              className="password-toggle" 
+              onClick={() => setShowPassword(!showPassword)}
+              tabIndex="-1"
+            >
+              {showPassword ? "👁️" : "👁️‍🗨️"}
+            </button>
+          </div>
+          
+          {isLogin && (
+            <button type="button" className="forgot-password-btn" onClick={handleResetPassword}>
+              Forgot Password?
+            </button>
+          )}
+
           {error && <div className="auth-error">{error}</div>}
+          {message && <div className="auth-success">{message}</div>}
+          
           <button type="submit" className="btn-primary auth-submit" disabled={loading}>
             {loading ? 'Please wait...' : isLogin ? 'Sign In →' : 'Create My Account →'}
           </button>
@@ -136,4 +177,5 @@ export default function Auth() {
     </div>
   );
 }
+
 
