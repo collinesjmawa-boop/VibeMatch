@@ -143,6 +143,39 @@ export default function Room() {
     setInputMessage('');
   };
 
+  const [isRecording, setIsRecording] = useState(false);
+  const mediaRecorder = useRef(null);
+  const recordedChunks = useRef([]);
+
+  const startRecording = () => {
+    recordedChunks.current = [];
+    const stream = new MediaStream([
+      ...localStream.current.getTracks(),
+      ...(remoteVideoRef.current?.srcObject ? remoteVideoRef.current.srcObject.getTracks() : [])
+    ]);
+
+    mediaRecorder.current = new MediaRecorder(stream, { mimeType: 'video/webm' });
+    mediaRecorder.current.ondataavailable = (e) => {
+      if (e.data.size > 0) recordedChunks.current.push(e.data);
+    };
+    mediaRecorder.current.onstop = () => {
+      const blob = new Blob(recordedChunks.current, { type: 'video/webm' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `VibeClip_${roomId}.webm`;
+      a.click();
+    };
+
+    mediaRecorder.current.start();
+    setIsRecording(true);
+  };
+
+  const stopRecording = () => {
+    mediaRecorder.current.stop();
+    setIsRecording(false);
+  };
+
   return (
     <div className="room-container">
       <header className="room-header">
@@ -151,11 +184,22 @@ export default function Room() {
           <span className="with-user">Talking with <strong>{withUser}</strong></span>
         </div>
         <div className="timer-box">{formatTime(timeLeft)}</div>
-        <button className="leave-btn" onClick={() => navigate('/vibe')}>End Session</button>
+        <div className="header-actions">
+          <button 
+            className={`record-btn ${isRecording ? 'recording' : ''}`} 
+            onClick={isRecording ? stopRecording : startRecording}
+          >
+            {isRecording ? '⏹ Stop Clip' : '🔴 Record Vibe'}
+          </button>
+          <button className="leave-btn" onClick={() => navigate('/vibe')}>End Session</button>
+        </div>
       </header>
 
       <div className="room-content">
         <div className="media-grid">
+          {/* Watermark Overlay (Hidden, used for context) */}
+          <div className="vibe-watermark">VIBEMATCH.APP ✨</div>
+          
           <div className="video-card remote">
             <video ref={remoteVideoRef} autoPlay playsInline className="video-stream"></video>
             {!remoteVideoRef.current?.srcObject && (
@@ -214,3 +258,4 @@ export default function Room() {
     </div>
   );
 }
+

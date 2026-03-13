@@ -249,13 +249,45 @@
   }
 }
 
+.header-actions { display: flex; gap: 12px; align-items: center; }
+
+.record-btn {
+  background: transparent;
+  color: #ef4444;
+  border: 2px solid #ef4444;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.record-btn:hover { background: rgba(239, 68, 68, 0.1); }
+.record-btn.recording {
+  background: #ef4444;
+  color: white;
+  animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-red {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); }
+  100% { transform: scale(1); }
+}
+
+.vibe-watermark {
+  position: absolute;
+  top: 24px; left: 24px;
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: white;
+  opacity: 0.3;
+  z-index: 5;
+  pointer-events: none;
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: 2px;
+}
+
 @media (max-width: 480px) {
-  .room-header {
-    padding: 8px 12px;
-  }
-  .with-user { display: none; }
-  .control-btn {
-    padding: 8px 12px;
-    font-size: 0.8rem;
-  }
+  .vibe-watermark { font-size: 0.8rem; top: 10px; left: 10px; }
 }
