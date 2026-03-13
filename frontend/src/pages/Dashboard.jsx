@@ -159,6 +159,23 @@ export default function Dashboard() {
     });
   };
 
+  const handleAddComment = async (postId, text) => {
+    if (!text.trim()) return;
+    const postRef = doc(db, 'vibe_posts', postId);
+    await updateDoc(postRef, {
+      comments: arrayUnion({
+        id: Date.now(),
+        userId: user.uid,
+        userName: user.displayName,
+        text: text.trim().substring(0, 280),
+        createdAt: Date.now()
+      })
+    });
+  };
+
+  const [activeCommentId, setActiveCommentId] = useState(null);
+  const [commentText, setCommentText] = useState('');
+
   return (
     <div className="dashboard-container">
       <header className="dash-header">
@@ -286,8 +303,38 @@ export default function Dashboard() {
                       🔥 <span>{post.reactions.fire?.length || 0}</span>
                     </button>
                   </div>
-                  <button className="comment-btn">💬 {post.comments?.length || 0} Comments</button>
+                  <button className="comment-btn" onClick={() => setActiveCommentId(activeCommentId === post.id ? null : post.id)}>
+                    💬 {post.comments?.length || 0} Comments
+                  </button>
                 </div>
+
+                {activeCommentId === post.id && (
+                  <div className="comment-section">
+                    <div className="comment-list">
+                      {post.comments?.map(c => (
+                        <div key={c.id} className="comment-item">
+                          <span className="comment-author">{c.userName}:</span>
+                          <span className="comment-text">{c.text}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="comment-input-box">
+                      <input 
+                        type="text" 
+                        placeholder="Tweet a reply..." 
+                        autoFocus
+                        value={commentText}
+                        onChange={(e) => setCommentText(e.target.value)}
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            handleAddComment(post.id, commentText);
+                            setCommentText('');
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
             {posts.length === 0 && !loading && (
