@@ -15,7 +15,7 @@ export default function Room() {
 
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
-  const [timeLeft, setTimeLeft] = useState(15 * 60);
+  const [timeLeft, setTimeLeft] = useState(60 * 60); // Extended to 1 Hour
   const [callType, setCallType] = useState(initialType); // 'text', 'audio', 'video'
   const [isMuted, setIsMuted] = useState(false);
   const [isCameraOff, setIsCameraOff] = useState(initialType !== 'video');
@@ -27,6 +27,9 @@ export default function Room() {
 
   useEffect(() => {
     socket.emit('join_room', roomId);
+
+    // Initialize peer connection immediately so we can receive even if we don't send
+    initPeerConnection();
 
     socket.on('receive_message', (msg) => {
       setMessages((prev) => [...prev, msg]);
@@ -65,8 +68,12 @@ export default function Room() {
       if (localStream.current) {
         localStream.current.getTracks().forEach(track => track.stop());
       }
+      if (peerConnection.current) {
+        peerConnection.current.close();
+      }
     };
   }, [roomId, navigate, withUser, initialType]);
+
 
   const startMedia = async () => {
     try {

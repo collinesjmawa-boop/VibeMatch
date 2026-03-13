@@ -29,9 +29,28 @@
   --shadow-md: 0 8px 16px rgba(0,0,0,0.04);
   --shadow-lg: 0 16px 32px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.02);
 
+  /* Container & Spacing */
+  --container-px: 32px;
+  --section-gap: 32px;
+
   /* Animation */
   --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (max-width: 768px) {
+  :root {
+    --container-px: 20px;
+    --section-gap: 24px;
+    --radius-lg: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  :root {
+    --container-px: 16px;
+    --section-gap: 20px;
+  }
 }
 
 * {
@@ -62,6 +81,22 @@ h1, h2, h3, h4 {
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--text-main);
+  line-height: 1.2;
+}
+
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.5rem; }
+
+@media (max-width: 768px) {
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.75rem; }
+  h3 { font-size: 1.25rem; }
+}
+
+@media (max-width: 480px) {
+  h1 { font-size: 1.75rem; }
+  h2 { font-size: 1.5rem; }
 }
 
 /* Glassmorphism Classes (Light Mode Adaptation) */
@@ -146,4 +181,16 @@ h1, h2, h3, h4 {
 .input-field:focus {
   border-color: var(--accent-default);
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.loading-screen {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent-default);
+  background: white;
 }

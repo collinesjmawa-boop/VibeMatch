@@ -21,6 +21,7 @@ export default function Auth() {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { resetPassword: resetPasswordFromContext } = useAuth();
 
   const handleGoogleSignIn = async () => {
     setError('');
@@ -58,8 +59,8 @@ export default function Auth() {
     setError('');
     setMessage('');
     try {
-      await sendPasswordResetEmail(auth, email);
-      setMessage('Password reset email sent! Check your inbox.');
+      await resetPasswordFromContext(email);
+      setMessage('Password reset email sent! Please check your inbox and spam folder.');
     } catch (err) {
       setError(err.message.replace('Firebase: ', ''));
     }
@@ -113,12 +114,14 @@ export default function Auth() {
           </button>
         </div>
 
-        <button className="google-btn" onClick={handleGoogleSignIn} disabled={loading}>
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
-          Continue with Google
-        </button>
+        <div className="auth-social-section">
+          <button className="google-btn" onClick={handleGoogleSignIn} disabled={loading}>
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
+            Continue with Google
+          </button>
 
-        <div className="or-divider"><span>OR</span></div>
+          <div className="or-divider"><span>OR CONTINUE WITH EMAIL</span></div>
+        </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>
           {!isLogin && (
@@ -157,9 +160,16 @@ export default function Auth() {
           </div>
           
           {isLogin && (
-            <button type="button" className="forgot-password-btn" onClick={handleResetPassword}>
-              Forgot Password?
-            </button>
+            <div className="auth-extra-actions">
+              <button 
+                type="button" 
+                className="forgot-password-link" 
+                onClick={handleResetPassword}
+                disabled={loading}
+              >
+                Forgot your password?
+              </button>
+            </div>
           )}
 
           {error && <div className="auth-error">{error}</div>}

@@ -9,6 +9,19 @@
   background: linear-gradient(135deg, #f0f4ff 0%, #fdf2ff 50%, #fff7ed 100%);
 }
 
+@media (max-width: 768px) {
+  .auth-container {
+    padding: var(--container-px);
+  }
+}
+
+@media (max-width: 600px) {
+  .auth-container {
+    align-items: flex-start;
+    padding-top: 40px;
+  }
+}
+
 /* Background decorative blobs */
 .auth-bg-blob {
   position: absolute;
@@ -45,6 +58,14 @@
   z-index: 1;
 }
 
+@media (max-width: 600px) {
+  .auth-card {
+    padding: 32px 20px;
+    gap: 20px;
+    border-radius: var(--radius-lg);
+  }
+}
+
 /* Logo */
 .auth-logo {
   text-align: center;
@@ -73,6 +94,11 @@
 .auth-logo-sub {
   color: var(--text-muted);
   font-size: 0.95rem;
+}
+
+@media (max-width: 600px) {
+  .auth-logo-text { font-size: 1.8rem; }
+  .auth-logo-sub { font-size: 0.85rem; }
 }
 
 /* Tabs */
@@ -208,22 +234,32 @@
   color: var(--accent-default);
 }
 
-.forgot-password-btn {
+.auth-extra-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -4px;
+}
+
+.forgot-password-link {
   background: transparent;
   border: none;
   color: var(--accent-default);
   font-weight: 600;
   font-size: 0.85rem;
-  align-self: flex-start;
-  padding: 0;
-  margin-top: -8px;
+  padding: 4px;
   cursor: pointer;
   transition: var(--transition-fast);
+  border-radius: 4px;
 }
 
-.forgot-password-btn:hover {
+.forgot-password-link:hover:not(:disabled) {
+  background: rgba(99, 102, 241, 0.05);
   text-decoration: underline;
-  opacity: 0.8;
+}
+
+.forgot-password-link:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Success Message */

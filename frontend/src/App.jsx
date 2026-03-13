@@ -9,7 +9,7 @@ import './App.css';
 // Component to protect routes
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
-  
+  console.log('Auth State (ProtectedRoute):', user);
   if (user === undefined) return <div className="loading-screen">✨ Loading VibeMatch...</div>;
   if (!user) return <Navigate to="/auth" />;
   

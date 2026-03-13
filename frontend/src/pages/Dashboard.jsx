@@ -9,7 +9,13 @@ import {
   setDoc, 
   deleteDoc, 
   query, 
-  where 
+  where,
+  addDoc,
+  orderBy,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  limit
 } from 'firebase/firestore';
 import { socket } from '../socket';
 import './Dashboard.css';
@@ -19,53 +25,53 @@ export default function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [activeUsers, setActiveUsers] = useState([]);
-  const [feedItems, setFeedItems] = useState([]);
+  const [posts, setPosts] = useState([]);
+  const [newPost, setNewPost] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // 1. Manage Presence
+  // 1. Manage Presence (Lobby)
   useEffect(() => {
     if (!user || !vibe) return;
-
     const presenceRef = doc(db, 'vibe_presence', `${vibe}_${user.uid}`);
-    
-    // Set presence
     setDoc(presenceRef, {
       uid: user.uid,
       name: user.displayName || 'Anonymous',
       vibe: vibe,
       lastSeen: Date.now()
     });
-
-    // Cleanup presence on unmount
-    return () => {
-      deleteDoc(presenceRef);
-    };
+    return () => { deleteDoc(presenceRef); };
   }, [user, vibe]);
 
   // 2. Listen to Lobby
   useEffect(() => {
     if (!vibe) return;
     const q = query(collection(db, 'vibe_presence'), where('vibe', '==', vibe));
-    
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const users = snapshot.docs
         .map(doc => doc.data())
-        .filter(u => u.uid !== user?.uid); // Don't show self
+        .filter(u => u.uid !== user?.uid);
       setActiveUsers(users);
       setLoading(false);
     });
-
     return unsubscribe;
   }, [vibe, user]);
 
-  // 3. Simulated Vibe Feed (Placeholder for promotions/news)
+  // 3. Listen to Vibe Wall (Posts)
   useEffect(() => {
-    const mockFeed = [
-      { id: 1, type: 'news', title: `Trending in ${vibe}`, content: `People are discussing new trends in ${vibe} this week. Join a room to talk about it!`, promoted: false },
-      { id: 2, type: 'promo', title: 'Featured Service', content: `Professional ${vibe} coaching available. Check out our latest session.`, promoted: true },
-      { id: 3, type: 'event', title: 'Live Meetup', content: `Global ${vibe} meet happening on Zoom this Saturday. Dont miss out!`, promoted: false }
-    ];
-    setFeedItems(mockFeed);
+    if (!vibe) return;
+    const q = query(
+      collection(db, 'vibe_posts'), 
+      where('vibe', '==', vibe),
+      orderBy('createdAt', 'desc'),
+      limit(50)
+    );
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const p = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setPosts(p);
+    });
+
+    return unsubscribe;
   }, [vibe]);
 
   // 4. Handle Incoming Calls
@@ -82,16 +88,38 @@ export default function Dashboard() {
 
   const startCall = (otherUser, type) => {
     const roomId = `room_${user.uid}_${otherUser.uid}`;
-    // Notify the other user
-    socket.emit('send_call_invite', {
-      toUid: otherUser.uid,
-      fromName: user.displayName,
-      roomId,
-      type,
-      vibe
-    });
-    // Navigate self
+    socket.emit('send_call_invite', { toUid: otherUser.uid, fromName: user.displayName, roomId, type, vibe });
     navigate(`/room/${roomId}?init=true&type=${type}&vibe=${encodeURIComponent(vibe)}&with=${encodeURIComponent(otherUser.name)}`);
+  };
+
+  const handleCreatePost = async (e) => {
+    e.preventDefault();
+    if (!newPost.trim()) return;
+    
+    try {
+      await addDoc(collection(db, 'vibe_posts'), {
+        vibe,
+        authorId: user.uid,
+        authorName: user.displayName,
+        content: newPost.trim(),
+        createdAt: Date.now(),
+        reactions: { love: [], fire: [], like: [] },
+        comments: []
+      });
+      setNewPost('');
+    } catch (err) {
+      console.error("Error creating post:", err);
+    }
+  };
+
+  const handleReaction = async (postId, type) => {
+    const postRef = doc(db, 'vibe_posts', postId);
+    const post = posts.find(p => p.id === postId);
+    const hasReacted = post.reactions[type]?.includes(user.uid);
+    
+    await updateDoc(postRef, {
+      [`reactions.${type}`]: hasReacted ? arrayRemove(user.uid) : arrayUnion(user.uid)
+    });
   };
 
   return (
@@ -99,7 +127,7 @@ export default function Dashboard() {
       <header className="dash-header">
         <div className="dash-brand" onClick={() => navigate('/vibe')}>
           <span className="dash-logo">✨</span>
-          <h1 className="dash-title">VibeMatch Dashboard</h1>
+          <h1 className="dash-title">VibeMatch</h1>
         </div>
         <div className="dash-vibe-badge">
           Current Vibe: <strong>{vibe}</strong>
@@ -122,6 +150,7 @@ export default function Dashboard() {
                   <div className="user-details">
                     <p className="user-name">{u.name}</p>
                     <div className="call-actions">
+                      <button className="call-btn chat" onClick={() => startCall(u, 'text')}>💬 Chat</button>
                       <button className="call-btn audio" onClick={() => startCall(u, 'audio')}>📞 Audio</button>
                       <button className="call-btn video" onClick={() => startCall(u, 'video')}>📹 Video</button>
                     </div>
@@ -131,29 +160,79 @@ export default function Dashboard() {
             ) : (
               <div className="empty-lobby">
                 <p>You're the first one here! 🌟</p>
-                <span>Hanging tight... others with this vibe will appear here soon.</span>
+                <span>Invite friends with this vibe to chat.</span>
               </div>
             )}
           </div>
         </section>
 
-        {/* Right Panel: Feed */}
+        {/* Right Panel: Vibe Wall (Posts) */}
         <section className="dash-panel feed-panel">
           <div className="panel-header">
-            <h3>Vibe Feed</h3>
+            <h3>Vibe Wall</h3>
+            <span className="vibe-count">{posts.length} Posts</span>
           </div>
+          
+          <div className="post-creator">
+            <form onSubmit={handleCreatePost}>
+              <textarea 
+                placeholder={`Share a thought with other ${vibe} people...`}
+                value={newPost}
+                onChange={(e) => setNewPost(e.target.value)}
+              />
+              <div className="creator-footer">
+                <span className="char-count">{newPost.length}/280</span>
+                <button className="btn-primary post-btn" disabled={!newPost.trim()}>Post Vibe →</button>
+              </div>
+            </form>
+          </div>
+
           <div className="feed-list">
-            {feedItems.map(item => (
-              <div key={item.id} className={`feed-card ${item.promoted ? 'promoted' : ''}`}>
-                {item.promoted && <span className="promoted-tag">Promoted</span>}
-                <h4>{item.title}</h4>
-                <p>{item.content}</p>
-                <button className="feed-btn">Learn More →</button>
+            {posts.map(post => (
+              <div key={post.id} className="feed-card post-card">
+                <div className="post-header">
+                  <div className="post-avatar">{post.authorName?.charAt(0)}</div>
+                  <div className="post-meta">
+                    <span className="author">{post.authorName}</span>
+                    <span className="time">{new Date(post.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                  </div>
+                </div>
+                <p className="post-content">{post.content}</p>
+                
+                <div className="post-interactions">
+                  <div className="reactions">
+                    <button 
+                      className={`react-btn ${post.reactions.love?.includes(user.uid) ? 'active' : ''}`}
+                      onClick={() => handleReaction(post.id, 'love')}
+                    >
+                      ❤️ <span>{post.reactions.love?.length || 0}</span>
+                    </button>
+                    <button 
+                      className={`react-btn ${post.reactions.like?.includes(user.uid) ? 'active' : ''}`}
+                      onClick={() => handleReaction(post.id, 'like')}
+                    >
+                      👍 <span>{post.reactions.like?.length || 0}</span>
+                    </button>
+                    <button 
+                      className={`react-btn ${post.reactions.fire?.includes(user.uid) ? 'active' : ''}`}
+                      onClick={() => handleReaction(post.id, 'fire')}
+                    >
+                      🔥 <span>{post.reactions.fire?.length || 0}</span>
+                    </button>
+                  </div>
+                  <button className="comment-btn">💬 {post.comments?.length || 0} Comments</button>
+                </div>
               </div>
             ))}
+            {posts.length === 0 && !loading && (
+              <div className="empty-feed">
+                <p>No posts yet in this vibe. Be the first!</p>
+              </div>
+            )}
           </div>
         </section>
       </main>
     </div>
   );
 }
+
