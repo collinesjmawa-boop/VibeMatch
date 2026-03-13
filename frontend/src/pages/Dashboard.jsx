@@ -29,6 +29,10 @@ export default function Dashboard() {
   const [newPost, setNewPost] = useState('');
   const [loading, setLoading] = useState(true);
 
+  const [vibeGroups, setVibeGroups] = useState([]);
+  const [isCreatingGroup, setIsCreatingGroup] = useState(false);
+  const [groupPrivacy, setGroupPrivacy] = useState('public');
+
   // 1. Manage Presence (Lobby)
   useEffect(() => {
     if (!user || !vibe) return;
@@ -42,18 +46,24 @@ export default function Dashboard() {
     return () => { deleteDoc(presenceRef); };
   }, [user, vibe]);
 
-  // 2. Listen to Lobby
+  // 2. Listen to Lobby & Groups
   useEffect(() => {
     if (!vibe) return;
-    const q = query(collection(db, 'vibe_presence'), where('vibe', '==', vibe));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const users = snapshot.docs
-        .map(doc => doc.data())
-        .filter(u => u.uid !== user?.uid);
-      setActiveUsers(users);
+    
+    // Users
+    const qUsers = query(collection(db, 'vibe_presence'), where('vibe', '==', vibe));
+    const unsubUsers = onSnapshot(qUsers, (snapshot) => {
+      setActiveUsers(snapshot.docs.map(doc => doc.data()).filter(u => u.uid !== user?.uid));
       setLoading(false);
     });
-    return unsubscribe;
+
+    // Groups
+    const qGroups = query(collection(db, 'vibe_groups'), where('vibe', '==', vibe), where('status', '==', 'active'));
+    const unsubGroups = onSnapshot(qGroups, (snapshot) => {
+      setVibeGroups(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    });
+
+    return () => { unsubUsers(); unsubGroups(); };
   }, [vibe, user]);
 
   // 3. Listen to Vibe Wall (Posts)
@@ -90,6 +100,33 @@ export default function Dashboard() {
     const roomId = `room_${user.uid}_${otherUser.uid}`;
     socket.emit('send_call_invite', { toUid: otherUser.uid, fromName: user.displayName, roomId, type, vibe });
     navigate(`/room/${roomId}?init=true&type=${type}&vibe=${encodeURIComponent(vibe)}&with=${encodeURIComponent(otherUser.name)}`);
+  };
+
+  const handleCreateGroup = async () => {
+    const groupId = `group_${user.uid}_${Date.now()}`;
+    try {
+      await setDoc(doc(db, 'vibe_groups', groupId), {
+        vibe,
+        creatorId: user.uid,
+        creatorName: user.displayName,
+        privacy: groupPrivacy,
+        status: 'active',
+        createdAt: Date.now()
+      });
+      // Copy link to clipboard if private
+      const link = `${window.location.origin}/room/${groupId}?type=video&vibe=${encodeURIComponent(vibe)}&with=${encodeURIComponent(user.displayName)}'s Group`;
+      if (groupPrivacy === 'private') {
+        navigator.clipboard.writeText(link);
+        alert("Private Group Created! Link copied to clipboard. Share it with your colleagues! 🔗");
+      }
+      navigate(`/room/${groupId}?init=true&type=video&vibe=${encodeURIComponent(vibe)}&with=${encodeURIComponent(user.displayName)}'s Group`);
+    } catch (err) {
+      console.error("Error creating group:", err);
+    }
+  };
+
+  const joinGroup = (group) => {
+    navigate(`/room/${group.id}?type=video&vibe=${encodeURIComponent(vibe)}&with=${encodeURIComponent(group.creatorName)}'s Group`);
   };
 
   const handleCreatePost = async (e) => {
@@ -140,9 +177,39 @@ export default function Dashboard() {
         <section className="dash-panel lobby-panel">
           <div className="panel-header">
             <h3>Live Lobby</h3>
-            <span className="pulse-dot"></span>
+            <button className="create-group-btn" onClick={() => setIsCreatingGroup(!isCreatingGroup)}>
+              {isCreatingGroup ? '✖ Cancel' : '➕ Create Group'}
+            </button>
           </div>
+
+          {isCreatingGroup && (
+            <div className="group-creator-box">
+              <p>Start a collaborative viding session</p>
+              <div className="privacy-toggle">
+                <button className={groupPrivacy === 'public' ? 'active' : ''} onClick={() => setGroupPrivacy('public')}>Public</button>
+                <button className={groupPrivacy === 'private' ? 'active' : ''} onClick={() => setGroupPrivacy('private')}>Private (Link Only)</button>
+              </div>
+              <button className="btn-primary" onClick={handleCreateGroup}>Launch Group Space →</button>
+            </div>
+          )}
+
           <div className="user-list">
+            {vibeGroups.length > 0 && (
+              <div className="vibe-groups-section">
+                <span className="section-label">Active Groups</span>
+                {vibeGroups.filter(g => g.privacy === 'public').map(group => (
+                  <div key={group.id} className="user-card group-card">
+                    <div className="user-avatar group">👥</div>
+                    <div className="user-details">
+                      <p className="user-name">{group.creatorName}'s Space</p>
+                      <button className="join-group-btn" onClick={() => joinGroup(group)}>Join Group</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <span className="section-label">Online Individuals</span>
             {activeUsers.length > 0 ? (
               activeUsers.map(u => (
                 <div key={u.uid} className="user-card">
@@ -159,8 +226,7 @@ export default function Dashboard() {
               ))
             ) : (
               <div className="empty-lobby">
-                <p>You're the first one here! 🌟</p>
-                <span>Invite friends with this vibe to chat.</span>
+                <p>No active users nearby... yet! 🌟</p>
               </div>
             )}
           </div>
