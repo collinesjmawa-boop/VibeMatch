@@ -169,16 +169,48 @@ export default function Dashboard() {
 
   const handleAddComment = async (postId, text) => {
     if (!text.trim()) return;
-    const postRef = doc(db, 'vibe_posts', postId);
-    await updateDoc(postRef, {
-      comments: arrayUnion({
-        id: Date.now(),
-        userId: user.uid,
-        userName: user.displayName,
-        text: text.trim().substring(0, 280),
-        createdAt: Date.now()
-      })
-    });
+    try {
+      const postRef = doc(db, 'vibe_posts', postId);
+      await updateDoc(postRef, {
+        comments: arrayUnion({
+          id: Date.now(),
+          userId: user.uid,
+          userName: user.displayName,
+          text: text.trim().substring(0, 280),
+          createdAt: Date.now()
+        })
+      });
+      setCommentText(''); // Clear text after posting
+    } catch (err) {
+      console.error("Error adding comment:", err);
+    }
+  };
+
+  const handleDeletePost = async (postId) => {
+    if (!window.confirm("Delete this vibe forever? 🗑️")) return;
+    try {
+      await deleteDoc(doc(db, 'vibe_posts', postId));
+    } catch (err) {
+      console.error("Error deleting post:", err);
+    }
+  };
+
+  const handleSharePost = async (post) => {
+    const shareUrl = `${window.location.origin}/post/${post.id}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `VibeMatch - ${post.vibe} Vibe`,
+          text: `Check out this post on VibeMatch: "${post.content.substring(0, 50)}..."`,
+          url: shareUrl
+        });
+      } catch (err) {
+        console.log("Share failed:", err);
+      }
+    } else {
+      navigator.clipboard.writeText(shareUrl);
+      alert("Link copied to clipboard! Share it with your friends! 🔗");
+    }
   };
 
   const [activeCommentId, setActiveCommentId] = useState(null);
@@ -287,8 +319,18 @@ export default function Dashboard() {
                     <span className="author">{post.authorName}</span>
                     <span className="time">{new Date(post.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                   </div>
+                  <div className="post-actions-top">
+                    <button className="post-action-btn share" onClick={() => handleSharePost(post)} title="Share Vibe">📤</button>
+                    {post.authorId === user.uid && (
+                      <>
+                        <button className="post-action-btn delete" onClick={() => handleDeletePost(post.id)} title="Delete Vibe">🗑️</button>
+                      </>
+                    )}
+                  </div>
                 </div>
-                <p className="post-content">{post.content}</p>
+                <div className="post-body">
+                  <p className="post-content">{post.content}</p>
+                </div>
                 
                 <div className="post-interactions">
                   <div className="reactions">
@@ -336,10 +378,16 @@ export default function Dashboard() {
                         onKeyPress={(e) => {
                           if (e.key === 'Enter') {
                             handleAddComment(post.id, commentText);
-                            setCommentText('');
                           }
                         }}
                       />
+                      <button 
+                        className="btn-comment-post" 
+                        onClick={() => handleAddComment(post.id, commentText)}
+                        disabled={!commentText.trim()}
+                      >
+                        Reply
+                      </button>
                     </div>
                   </div>
                 )}

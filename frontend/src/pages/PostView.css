@@ -1,0 +1,112 @@
+.post-view-container {
+  min-height: 100vh;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+}
+
+.post-view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  background: white;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.post-view-header .brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.post-view-header h1 {
+  font-size: 1.4rem;
+  background: linear-gradient(135deg, var(--accent-default), #d946ef);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.join-btn-top {
+  background: var(--bg-main);
+  border: 1.5px solid var(--accent-default);
+  color: var(--accent-default);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.post-view-main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.post-card.standalone {
+  width: 100%;
+  max-width: 600px;
+  background: white;
+  border-radius: 24px;
+  border: 1px solid #e2e8f0;
+  box-shadow: var(--shadow-lg);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: fit-content;
+}
+
+.vibe-tag {
+  background: #f1f5f9;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  align-self: flex-start;
+}
+
+.guest-footer {
+  margin-top: 20px;
+  padding-top: 24px;
+  border-top: 2px dashed #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.guest-stats {
+  display: flex;
+  gap: 16px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.cta-box {
+  background: #f1f5f9;
+  padding: 24px;
+  border-radius: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cta-box p {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-main);
+}
+
+.error-view {
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+}
