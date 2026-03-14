@@ -69,16 +69,22 @@ export default function Dashboard() {
   // 3. Listen to Vibe Wall (Posts)
   useEffect(() => {
     if (!vibe) return;
+    
+    // Using a simpler query first to avoid missing index errors
+    // once we confirm this works, we can re-add orderBy after creating the index in Firebase Console
     const q = query(
       collection(db, 'vibe_posts'), 
       where('vibe', '==', vibe),
-      orderBy('createdAt', 'desc'),
       limit(50)
     );
     
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const p = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setPosts(p);
+      // Sort in memory if index is missing
+      const sortedPosts = p.sort((a, b) => b.createdAt - a.createdAt);
+      setPosts(sortedPosts);
+    }, (error) => {
+      console.error("Firestore Wall Error:", error);
     });
 
     return unsubscribe;
@@ -144,8 +150,10 @@ export default function Dashboard() {
         comments: []
       });
       setNewPost('');
+      // No alert needed for success if real-time works, but good to have for debugging
     } catch (err) {
       console.error("Error creating post:", err);
+      alert("Failed to post: " + err.message);
     }
   };
 
