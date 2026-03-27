@@ -75,7 +75,7 @@ export default function Landing() {
         </section>
 
         <section className="landing-vibes-section">
-          <p className="landing-section-label">Nine Vibes — Where do you need to be?</p>
+          <p className="landing-section-label">Where would you like to be?</p>
           <div className="landing-vibe-grid">
             {NINE_VIBES.map((vibe) => (
               <button

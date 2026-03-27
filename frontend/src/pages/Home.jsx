@@ -57,7 +57,7 @@ export default function Home() {
       <main className="vibe-select-main">
         <div className="vibe-hero">
           <p className="vibe-question editorial">Something brought you here tonight.</p>
-          <p className="vibe-sub">Where do you need to be?</p>
+          <p className="vibe-sub">Where would you like to be?</p>
         </div>
 
         <div className="nine-vibes-grid">
