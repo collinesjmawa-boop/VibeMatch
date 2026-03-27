@@ -206,6 +206,39 @@
 /* Responsive */
 @media (max-width: 600px) {
   .home-header { padding: 14px 16px; }
-  .home-main   { padding: 32px 16px 48px; }
-  .vibe-grid   { grid-template-columns: 1fr; }
+  .home-main   { padding: 16px 16px 24px; }
+  
+  /* Compress grid so all 9 fit vertically above the fold without scrolling */
+  .nine-vibes-grid { 
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .vibe-card {
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px 4px;
+    gap: 4px;
+    text-align: center;
+  }
+  .vibe-card::before { display: none; }
+  .vibe-emoji {
+    font-size: 1.3rem;
+  }
+  .vibe-name {
+    font-size: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    margin: 0;
+  }
+  .vibe-tagline {
+    display: none;
+  }
+  .vibe-hero {
+    margin-bottom: 24px;
+  }
+  .vibe-question {
+    font-size: 1.6rem;
+  }
 }

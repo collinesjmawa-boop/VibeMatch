@@ -325,11 +325,38 @@
 /* Responsive */
 @media (max-width: 640px) {
   .landing-header { padding: 16px; }
-  .landing-hero   { padding: 40px 16px 32px; }
-  .landing-vibe-grid { grid-template-columns: repeat(2, 1fr); }
-  .landing-vibes-section { padding: 0 16px 48px; }
+  .landing-hero   { padding: 16px 16px 24px; }
+  .landing-question { font-size: 1.6rem; }
+  .landing-sub { margin-bottom: 20px; font-size: 0.9rem; }
+  
+  /* Compress grid so all 9 fit identically */
+  .landing-vibe-grid { 
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .landing-vibe-card {
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px 4px;
+    gap: 4px;
+    text-align: center;
+  }
+  .landing-vibe-card::after { display: none; }
+  .landing-vibe-emoji { font-size: 1.3rem; }
+  .landing-vibe-name {
+    font-size: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    margin: 0;
+  }
+  .landing-vibe-tag { display: none; }
+  .landing-vibes-section { padding: 0 16px 24px; }
 }
 
 @media (max-width: 400px) {
-  .landing-vibe-grid { grid-template-columns: 1fr; }
+  .landing-vibe-grid { grid-template-columns: repeat(3, 1fr); gap: 4px; }
+  .landing-vibe-card { padding: 8px 2px; }
+  .landing-vibe-name { font-size: 0.7rem; }
 }

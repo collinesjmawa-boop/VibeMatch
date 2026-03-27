@@ -9,7 +9,8 @@ import {
   sendEmailVerification
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { auth, db, googleProvider } from '../firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { auth, db, googleProvider, storage } from '../firebase';
 import { useAuth } from '../contexts/AuthContext';
 import './Auth.css';
 
@@ -20,11 +21,12 @@ export default function Auth() {
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [photoFile, setPhotoFile] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [verifyGate, setVerifyGate] = useState(false);     // show email verification screen
+  const [verifyGate, setVerifyGate] = useState(false);
   const [gateUser, setGateUser] = useState(null);
 
   const navigate = useNavigate();
@@ -113,12 +115,22 @@ export default function Auth() {
 
         const { user } = await createUserWithEmailAndPassword(auth, email, password);
         const dn = displayName.trim();
-        await updateProfile(user, { displayName: dn });
+
+        // Upload Profile Picture
+        let photoURL = '';
+        if (photoFile) {
+          const fileRef = ref(storage, `avatars/${user.uid}`);
+          await uploadBytes(fileRef, photoFile);
+          photoURL = await getDownloadURL(fileRef);
+        }
+
+        await updateProfile(user, { displayName: dn, photoURL });
         await setDoc(doc(db, 'users', user.uid), {
           uid:         user.uid,
           firstName:   firstName.trim(),
           lastName:    lastName.trim(),
           displayName: dn,
+          photoURL,
           email,
           emailVerified: false,
           isPremium:   false,
@@ -246,6 +258,18 @@ export default function Auth() {
                       : `Must be exactly your first name ("${firstName}") or last name ("${lastName}").`}
                   </p>
                 )}
+              </div>
+
+              <div style={{ marginTop: '4px' }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '6px' }}>
+                  Profile Picture (Optional)
+                </label>
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  onChange={(e) => setPhotoFile(e.target.files[0])}
+                  style={{ color: 'var(--text-primary)', marginBottom: '6px' }}
+                />
               </div>
             </>
           )}
