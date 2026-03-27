@@ -29,6 +29,7 @@ app.post('/api/ai-companion', async (req, res) => {
   try {
     const { vibe, channel, history } = req.body;
     if (!process.env.GEMINI_API_KEY) {
+      console.warn("AI Companion Error: GEMINI_API_KEY is missing from Render environment.");
       return res.status(503).json({ error: "companion_unavailable" });
     }
     
