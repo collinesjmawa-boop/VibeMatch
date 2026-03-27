@@ -10,12 +10,28 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["https://vibematch-ten.vercel.app", "http://localhost:5173"],
+    origin: (origin, callback) => {
+      // Allow any vercel subdomain or localhost
+      if (!origin || origin.includes('.vercel.app') || origin.includes('localhost')) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: ["GET", "POST"]
   }
 });
 
-app.use(cors());
+// Configure Express CORS to be equally flexible
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || origin.includes('.vercel.app') || origin.includes('localhost')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
 app.use(express.json());
 
 const CHANNEL_PROMPTS = {
