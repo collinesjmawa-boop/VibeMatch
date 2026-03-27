@@ -23,8 +23,8 @@ export default function AICompanion({ vibe, channel }) {
     setLoading(true);
 
     try {
-      const PORT = 5000;
-      const res = await fetch(`http://localhost:${PORT}/api/ai-companion`, {
+      const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+      const res = await fetch(`${BACKEND_URL}/api/ai-companion`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
