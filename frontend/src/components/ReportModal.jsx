@@ -32,7 +32,7 @@ export default function ReportModal({ onClose, reportedUid, contentSnapshot, vib
   return (
     <div className="state-word-overlay">
       <div className="state-word-modal">
-        <h2 style={{ color: '#f4a99a' }}>Report to Moderators</h2>
+        <h2 style={{ color: 'var(--accent-ember)' }}>Report to Moderators</h2>
         
         {success ? (
           <p style={{ color: 'var(--accent-sage)', textAlign: 'center', marginTop: '20px' }}>
@@ -67,7 +67,7 @@ export default function ReportModal({ onClose, reportedUid, contentSnapshot, vib
               <button 
                 onClick={handleSubmit} 
                 className="btn-primary" 
-                style={{ flex: 1, justifyContent: 'center', background: 'var(--accent-ember-dim)', color: '#f4a99a' }}
+                style={{ flex: 1, justifyContent: 'center', background: 'var(--accent-ember-dim)', color: 'var(--accent-ember)' }}
                 disabled={loading}
               >
                 {loading ? 'Sending...' : 'Submit Report'}

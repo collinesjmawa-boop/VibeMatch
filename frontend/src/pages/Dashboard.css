@@ -80,7 +80,7 @@
   align-items: center;
   justify-content: space-between;
   font-size: 0.85rem;
-  color: #f4a99a;
+  color: var(--accent-ember);
 }
 
 .guest-banner a,
@@ -756,7 +756,7 @@
 
 .report-btn:hover {
   background: var(--accent-ember-dim);
-  color: #f4a99a;
+  color: var(--accent-ember);
 }
 
 /* Empty feed */

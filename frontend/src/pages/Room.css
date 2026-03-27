@@ -103,7 +103,7 @@
   background: var(--accent-ember-dim);
   border: 1px solid rgba(212,104,90,0.25);
   border-radius: var(--radius-sm);
-  color: #f4a99a;
+  color: var(--accent-ember);
   font-size: 0.82rem;
   font-family: var(--font-ui);
 }
@@ -321,7 +321,7 @@
 .ctrl-btn.danger {
   background: var(--accent-ember-dim);
   border-color: rgba(212,104,90,0.3);
-  color: #f4a99a;
+  color: var(--accent-ember);
 }
 
 .ctrl-btn.danger:hover {
@@ -435,7 +435,7 @@
 
 .chat-report-btn:hover {
   background: var(--accent-ember-dim);
-  color: #f4a99a;
+  color: var(--accent-ember);
 }
 
 /* Responsive */

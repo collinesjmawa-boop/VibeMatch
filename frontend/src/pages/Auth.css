@@ -196,7 +196,7 @@
   border: 1px solid rgba(212,104,90,0.3);
   border-radius: var(--radius-sm);
   padding: 10px 14px;
-  color: #f4a99a;
+  color: var(--accent-ember);
   font-size: 0.85rem;
 }
 
@@ -274,6 +274,6 @@
 }
 
 .display-name-hint.invalid {
-  color: #f4a99a;
+  color: var(--accent-ember);
   background: var(--accent-ember-dim);
 }

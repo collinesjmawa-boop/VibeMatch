@@ -4,26 +4,26 @@
    ============================================================ */
 
 :root {
-  /* ── Colour Palette ── */
-  --bg-primary:    #0D0D14;
-  --bg-surface:    #16161F;
-  --bg-elevated:   #1E1E2A;
-  --bg-glass:      rgba(22, 22, 31, 0.75);
+  /* ── Colour Palette (Warm Parchment Light Theme) ── */
+  --bg-primary:    #F7F5F0;
+  --bg-surface:    #FFFFFF;
+  --bg-elevated:   #EAE6DC;
+  --bg-glass:      rgba(247, 245, 240, 0.85);
 
   --accent-gold:   #C9956A;
-  --accent-gold-dim: rgba(201, 149, 106, 0.15);
+  --accent-gold-dim: rgba(201, 149, 106, 0.2);
   --accent-sage:   #7D9E8C;
-  --accent-sage-dim: rgba(125, 158, 140, 0.15);
+  --accent-sage-dim: rgba(125, 158, 140, 0.2);
   --accent-ember:  #D4685A;
-  --accent-ember-dim: rgba(212, 104, 90, 0.12);
+  --accent-ember-dim: rgba(212, 104, 90, 0.15);
 
-  --text-primary:  #EDE8DF;
-  --text-secondary: rgba(237, 232, 223, 0.6);
-  --text-muted:    rgba(237, 232, 223, 0.35);
-  --text-link:     #C9956A;
+  --text-primary:  #2C2B29;
+  --text-secondary: #5C5A56;
+  --text-muted:    #8E8B85;
+  --text-link:     #B57A50;
 
-  --border:        rgba(237, 232, 223, 0.08);
-  --border-glow:   rgba(201, 149, 106, 0.25);
+  --border:        rgba(44, 43, 41, 0.12);
+  --border-glow:   rgba(201, 149, 106, 0.4);
 
   /* ── Typography ── */
   --font-display:  'Cormorant Garamond', Georgia, serif;
@@ -129,7 +129,7 @@ button:disabled {
   gap: 8px;
   padding: 12px 24px;
   background: var(--accent-gold);
-  color: var(--bg-primary);
+  color: #1A1A1A;
   font-weight: 600;
   font-size: 0.9rem;
   letter-spacing: 0.03em;
