@@ -13,9 +13,6 @@ import AICompanion from '../components/AICompanion';
 
 import './Dashboard.css';
 
-// Pre-defined state words
-const STATE_WORDS = ["Heavy", "Curious", "Lost", "Hopeful", "Scattered", "Grateful", "Numb", "Driven", "Tender", "Exhausted"];
-
 export default function Dashboard() {
   const { vibe: rawVibeParam } = useParams();
   const decodedPath = decodeURIComponent(rawVibeParam);
@@ -30,7 +27,6 @@ export default function Dashboard() {
 
   // ── Modals & UI State ─────────────────────────────────────
   const [showStateWordModal, setShowStateWordModal] = useState(!isGuestMode);
-  const [stateWordText, setStateWordText] = useState('');
   const [introText, setIntroText] = useState('');
   
   const [selectedUserIntro, setSelectedUserIntro] = useState(null); // for intro sheet
@@ -61,7 +57,7 @@ export default function Dashboard() {
   }, [user, isGuestMode]);
 
   const commitStateWord = async () => {
-    if (!stateWordText) return;
+    if (!introText.trim()) return;
     setShowStateWordModal(false);
     
     // Write presence with intro
@@ -70,7 +66,6 @@ export default function Dashboard() {
       name: userProfile?.displayName || user.displayName,
       vibe: parentVibe,
       channel: channelName,
-      stateWord: stateWordText,
       intro: introText.trim(),
       introExpiresAt: Date.now() + 86400000,
       lastSeen: Date.now()
@@ -272,44 +267,24 @@ export default function Dashboard() {
   return (
     <div className="dashboard-container">
       
-      {/* 1. State Word Modal (Blocking if unauthed/no state) */}
+      {/* 1. Onboarding Modal (Blocking if unauthed/no intro) */}
       {showStateWordModal && !isGuestMode && (
         <div className="state-word-overlay">
           <div className="state-word-modal">
-            <h2>One word.</h2>
-            <p>Where are you right now?</p>
-            
-            <div className="word-grid">
-              {STATE_WORDS.map(w => (
-                <button 
-                  key={w} 
-                  className={`word-chip ${stateWordText === w ? 'selected' : ''}`}
-                  onClick={() => setStateWordText(w)}
-                >
-                  {w}
-                </button>
-              ))}
-            </div>
-            
-            <div className="word-custom-input">
-              <input 
-                type="text" 
-                placeholder="Or type your own word..." 
-                value={stateWordText}
-                onChange={(e) => setStateWordText(e.target.value)}
-              />
-            </div>
+            <h2 style={{ fontSize: '1.8rem', marginBottom: '8px' }}>Welcome to {channelName}</h2>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Would you love to share briefly?</p>
 
             <div className="intro-textarea">
               <textarea 
-                placeholder={`Prompt: Why did you come to ${channelName} today?`}
+                placeholder="Share your thoughts..."
                 value={introText}
                 onChange={e => setIntroText(e.target.value.slice(0, 300))}
+                autoFocus
               />
               <span className="intro-char-count">{introText.length} / 300</span>
             </div>
 
-            <button className="btn-primary" style={{ width: '100%', justifyContent: 'center' }} disabled={!stateWordText} onClick={commitStateWord}>
+            <button className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '12px' }} disabled={!introText.trim()} onClick={commitStateWord}>
               Enter Space →
             </button>
           </div>

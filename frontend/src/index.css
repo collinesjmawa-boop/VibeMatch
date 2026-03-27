@@ -17,17 +17,17 @@
   --accent-ember:  #D4685A;
   --accent-ember-dim: rgba(212, 104, 90, 0.15);
 
-  --text-primary:  #2C2B29;
-  --text-secondary: #5C5A56;
-  --text-muted:    #8E8B85;
+  --text-primary:  #1A1A1A;
+  --text-secondary: #333333;
+  --text-muted:    #666666;
   --text-link:     #B57A50;
 
-  --border:        rgba(44, 43, 41, 0.12);
+  --border:        rgba(26, 26, 26, 0.12);
   --border-glow:   rgba(201, 149, 106, 0.4);
 
   /* ── Typography ── */
-  --font-display:  'Cormorant Garamond', Georgia, serif;
-  --font-ui:       'DM Sans', system-ui, sans-serif;
+  --font-display:  'Outfit', system-ui, sans-serif;
+  --font-ui:       'Inter', -apple-system, sans-serif;
 
   /* ── Spacing & Radii ── */
   --radius-sm:     6px;
