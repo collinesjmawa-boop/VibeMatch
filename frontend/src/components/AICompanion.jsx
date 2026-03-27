@@ -23,7 +23,10 @@ export default function AICompanion({ vibe, channel }) {
     setLoading(true);
 
     try {
-      const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+      let BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+      // Remove trailing slash if present
+      if (BACKEND_URL.endsWith('/')) BACKEND_URL = BACKEND_URL.slice(0, -1);
+      
       const res = await fetch(`${BACKEND_URL}/api/ai-companion`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
