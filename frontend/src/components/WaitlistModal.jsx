@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { db } from '../../firebase';
+import { db } from '../firebase';
 import { collection, addDoc } from 'firebase/firestore';
 
 export default function WaitlistModal({ onClose, title, subtitle }) {
