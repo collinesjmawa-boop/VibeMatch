@@ -3,29 +3,38 @@ import { useNavigate } from 'react-router-dom';
 import './Landing.css';
 
 const NINE_VIBES = [
-  { id: 'connect', emoji: '🤎', name: 'Connect', tagline: 'Romance & dating', channels: ['Seeking Real Connection', 'First Dates & Ideas', 'Long-Term Love', 'Heartbreak & Healing', 'Couples Space'] },
-  { id: 'play', emoji: '🎨', name: 'Play', tagline: 'Fun & hobbies', channels: ['Gaming Sessions', 'Arts, Crafts & DIY', 'Music Production', 'Book Club', 'Sports Talk'] },
-  { id: 'build', emoji: '🔥', name: 'Build', tagline: 'Business & ambition', channels: ['Entrepreneurship', 'Career Growth', 'Networking', 'Side Hustles', 'Tech & Startups'] },
-  { id: 'gather', emoji: '🙌', name: 'Gather', tagline: 'Local community', channels: ['Local Events', 'Volunteering', 'City Life', 'Neighbor Support'] },
-  { id: 'carry', emoji: '🌧️', name: 'Carry', tagline: 'Grief & heaviness', channels: ['Grief & Loss', 'Mental Health Support', 'Anxiety & Overwhelm', 'Silent Suffering'] },
-  { id: 'rise', emoji: '🌱', name: 'Rise', tagline: 'Recovery & resilience', channels: ['Sobriety Journey', 'Starting Over', 'Physical Healing', 'Rebuilding Confidence'] },
-  { id: 'seek', emoji: '🕯️', name: 'Seek', tagline: 'Spirituality & meaning', channels: ['Open Faith Dialogues', 'Meditation & Mindfulness', 'Questioning & Exploring'] },
-  { id: 'justbe', emoji: '🌙', name: 'Just Be', tagline: 'Presence & company', channels: ['Late Night Chat', 'No Agenda', 'Introvert Space', 'Simply Present'] },
-  { id: 'open', emoji: '✨', name: 'Open', tagline: 'Type your own vibe', channels: [] }
+  { id: 'romance', emoji: '🤎', name: 'Romance', tagline: 'Connect & dating', channels: ['Seeking Real Connection', 'First Dates & Ideas', 'Long-Term Love', 'Heartbreak & Healing', 'Couples Space'] },
+  { id: 'hobbies', emoji: '🎨', name: 'Fun & Hobbies', tagline: 'Play & create', channels: ['Gaming Sessions', 'Arts, Crafts & DIY', 'Music Production', 'Book Club', 'Sports Talk'] },
+  { id: 'business', emoji: '🔥', name: 'Business', tagline: 'Ambition & growth', channels: ['Entrepreneurship', 'Career Growth', 'Networking', 'Side Hustles', 'Tech & Startups'] },
+  { id: 'community', emoji: '🙌', name: 'Local Community', tagline: 'Gather & meet', channels: ['Local Events', 'Volunteering', 'City Life', 'Neighbor Support'] },
+  { id: 'spirituality', emoji: '🕯️', name: 'Spirituality', tagline: 'Christianity, Islam, Others', 
+    subcategories: [
+      { name: 'Christianity', channels: ['Bible Study Group', 'Prayers', 'Matters of Faith'] },
+      { name: 'Islam', channels: ['Prayers', 'Matters of Faith'] },
+      { name: 'Others', channels: ['General Spirituality', 'Meditation'] }
+    ]
+  },
+  { id: 'support', emoji: '🌧️', name: 'Grief & Support', tagline: 'Carry the weight', channels: ['Grief & Loss', 'Mental Health Support', 'Anxiety & Overwhelm', 'Silent Suffering'] },
+  { id: 'recovery', emoji: '🌱', name: 'Recovery', tagline: 'Rise & heal', channels: ['Sobriety Journey', 'Starting Over', 'Physical Healing', 'Rebuilding Confidence'] },
+  { id: 'presence', emoji: '🌙', name: 'Presence', tagline: 'Just be', channels: ['Late Night Chat', 'No Agenda', 'Introvert Space', 'Simply Present'] },
+  { id: 'open', emoji: '✨', name: 'Type a Vibe', tagline: 'Custom space', channels: [] }
 ];
 
 export default function Landing() {
   const navigate = useNavigate();
   const [openVibe, setOpenVibe] = useState(null);
   const [selectedChannel, setSelectedChannel] = useState(null);
+  const [nestedCategory, setNestedCategory] = useState(null);
 
   const handleVibeClick = (vibe) => {
     if (openVibe?.id === vibe.id) {
       setOpenVibe(null);
       setSelectedChannel(null);
+      setNestedCategory(null);
     } else {
       setOpenVibe(vibe);
       setSelectedChannel(null);
+      setNestedCategory(null);
     }
   };
 
@@ -59,10 +68,10 @@ export default function Landing() {
       <main>
         <section className="landing-hero">
           <p className="landing-question">
-            Something brought you here tonight.
+            What brought you here today.
           </p>
           <p className="landing-sub">
-            Find the space that fits where you are right now. Real people, real conversations.
+            Find your space and connect with people who feel the same.
           </p>
           <div className="landing-hero-ctas">
             <button className="btn-primary landing-enter-btn" onClick={handleEnterFully}>
@@ -126,16 +135,33 @@ export default function Landing() {
                   autoFocus
                 />
               </div>
-            ) : (
-              openVibe.channels.map((ch) => (
+            ) : openVibe.subcategories && !nestedCategory ? (
+              openVibe.subcategories.map((sub) => (
                 <button
-                  key={ch}
-                  className={`sheet-channel-chip ${selectedChannel === ch ? 'selected' : ''}`}
-                  onClick={() => setSelectedChannel(selectedChannel === ch ? null : ch)}
+                  key={sub.name}
+                  className="sheet-channel-chip"
+                  onClick={() => setNestedCategory(sub)}
                 >
-                  {ch}
+                  {sub.name} →
                 </button>
               ))
+            ) : (
+              <>
+                {openVibe.subcategories && nestedCategory && (
+                  <button className="sheet-channel-chip" onClick={() => { setNestedCategory(null); setSelectedChannel(null); }}>
+                    ← Back
+                  </button>
+                )}
+                {(nestedCategory?.channels || openVibe.channels || []).map((ch) => (
+                  <button
+                    key={ch}
+                    className={`sheet-channel-chip ${selectedChannel === ch ? 'selected' : ''}`}
+                    onClick={() => setSelectedChannel(selectedChannel === ch ? null : ch)}
+                  >
+                    {ch}
+                  </button>
+                ))}
+              </>
             )}
           </div>
 

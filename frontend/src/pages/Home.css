@@ -116,62 +116,69 @@
 }
 
 /* Vibe Grid */
-.vibe-grid {
+.nine-vibes-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
 }
 
 .vibe-card {
   background: var(--bg-surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 28px;
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 16px;
   transition: all var(--duration) var(--ease);
   position: relative;
   overflow: hidden;
+  text-align: left;
 }
 
 .vibe-card::before {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--vibe-accent, var(--accent-gold)), transparent);
-  opacity: 0;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--vibe-color, var(--accent-gold));
+  opacity: 0.2;
   transition: opacity var(--duration) var(--ease);
 }
 
-.vibe-card:hover {
-  border-color: var(--border-glow);
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-card), 0 0 30px rgba(201,149,106,0.08);
+.vibe-card:hover, .vibe-card.active {
+  border-color: var(--vibe-color, var(--accent-gold));
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
 }
 
-.vibe-card:hover::before {
+.vibe-card:hover::before, .vibe-card.active::before {
   opacity: 1;
 }
 
 .vibe-emoji {
-  font-size: 2rem;
-  margin-bottom: 12px;
-  display: block;
+  font-size: 1.6rem;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.vibe-info {
+  display: flex;
+  flex-direction: column;
 }
 
 .vibe-name {
   font-family: var(--font-display);
-  font-size: 1.3rem;
+  font-size: 1.15rem;
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 6px;
+  margin-bottom: 2px;
 }
 
-.vibe-desc {
+.vibe-tagline {
   font-size: 0.85rem;
   color: var(--text-secondary);
-  line-height: 1.5;
-  margin-bottom: 16px;
 }
 
 .vibe-channels {

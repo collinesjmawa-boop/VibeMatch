@@ -144,18 +144,21 @@
 
 .landing-vibe-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 12px;
 }
 
 .landing-vibe-card {
   background: var(--bg-surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 20px;
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
   cursor: pointer;
   transition: all var(--duration) var(--ease);
   text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 16px;
   position: relative;
   overflow: hidden;
 }
@@ -183,22 +186,27 @@
 
 .landing-vibe-emoji {
   font-size: 1.6rem;
-  display: block;
-  margin-bottom: 8px;
+  display: inline-block;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.landing-vibe-info {
+  display: flex;
+  flex-direction: column;
 }
 
 .landing-vibe-name {
   font-family: var(--font-display);
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 600;
   color: var(--text-primary);
-  display: block;
   margin-bottom: 2px;
 }
 
 .landing-vibe-tag {
-  font-size: 0.78rem;
-  color: var(--text-muted);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
 }
 
 /* Bottom sheet peek */

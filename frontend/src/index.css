@@ -5,10 +5,10 @@
 
 :root {
   /* ── Colour Palette (Warm Parchment Light Theme) ── */
-  --bg-primary:    #F7F5F0;
-  --bg-surface:    #FFFFFF;
-  --bg-elevated:   #EAE6DC;
-  --bg-glass:      rgba(247, 245, 240, 0.85);
+  --bg-primary:    #EDE4D3;
+  --bg-surface:    #F5EFE6;
+  --bg-elevated:   #DED4C0;
+  --bg-glass:      rgba(237, 228, 211, 0.85);
 
   --accent-gold:   #C9956A;
   --accent-gold-dim: rgba(201, 149, 106, 0.2);
