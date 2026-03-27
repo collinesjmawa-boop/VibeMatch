@@ -3,123 +3,129 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import './Home.css';
 
-const vibeCategories = [
-  {
-    group: '🎯 Learn & Grow',
-    vibes: ['Coding & Tech', 'Study Together', 'Language Exchange', 'Science Talk', 'Career Advice']
-  },
-  {
-    group: '📖 Spirituality',
-    vibes: ['Read Bible Together', 'Pray Together', 'Meditation', 'Quran Study', 'Faith & Life']
-  },
-  {
-    group: '💰 Money & Finance',
-    vibes: ['Financial Advice', 'Investment Talk', 'Crypto & Stocks', 'Business Ideas', 'Budgeting Help']
-  },
-  {
-    group: '💬 Social Vibes',
-    vibes: ['Chill & Chatty', 'Vent & Listen', 'Need Motivation', 'Make Friends', 'Debate Club']
-  },
-  {
-    group: '❤️ Romance',
-    vibes: ['Romantic', 'Dating Advice', 'Heartbreak Support', 'Relationship Goals']
-  },
-  {
-    group: '🎮 Fun & Hobbies',
-    vibes: ['Gaming', 'Music Lovers', 'Art & Creativity', 'Movies & Shows', 'Cooking & Food']
-  },
-  {
-    group: '💼 Business',
-    vibes: ['Networking', 'Pitch My Idea', 'Find a Co-founder', 'Freelancer\'s Corner']
-  },
-  {
-    group: '🌍 Local & Community',
-    vibes: ['Ugandan Politics', 'African Culture', 'Community Events', 'Health & Wellness']
-  },
+// The Nine Vibes — Universal Human Experiences
+const NINE_VIBES = [
+  { id: 'connect', emoji: '🤎', name: 'Connect', tagline: 'Romance & dating', color: 'var(--vibe-connect, #A87C5C)', channels: ['Seeking Real Connection', 'First Dates & Ideas', 'Long-Term Love', 'Heartbreak & Healing', 'Couples Space'] },
+  { id: 'play', emoji: '🎨', name: 'Play', tagline: 'Fun & hobbies', color: 'var(--vibe-play, #D1A372)', channels: ['Gaming Sessions', 'Arts, Crafts & DIY', 'Music Production', 'Book Club', 'Sports Talk'] },
+  { id: 'build', emoji: '🔥', name: 'Build', tagline: 'Business & ambition', color: 'var(--vibe-build, #DF755A)', channels: ['Entrepreneurship', 'Career Growth', 'Networking', 'Side Hustles', 'Tech & Startups'] },
+  { id: 'gather', emoji: '🙌', name: 'Gather', tagline: 'Local community', color: 'var(--vibe-gather, #A68B75)', channels: ['Local Events', 'Volunteering', 'City Life', 'Neighbor Support'] },
+  { id: 'carry', emoji: '🌧️', name: 'Carry', tagline: 'Grief & heaviness', color: 'var(--vibe-carry, #5A6D71)', channels: ['Grief & Loss', 'Mental Health Support', 'Anxiety & Overwhelm', 'Silent Suffering'] },
+  { id: 'rise', emoji: '🌱', name: 'Rise', tagline: 'Recovery & resilience', color: 'var(--vibe-rise, #7D9E8C)', channels: ['Sobriety Journey', 'Starting Over', 'Physical Healing', 'Rebuilding Confidence'] },
+  { id: 'seek', emoji: '🕯️', name: 'Seek', tagline: 'Spirituality & meaning', color: 'var(--vibe-seek, #E2C29B)', channels: ['Open Faith Dialogues', 'Meditation & Mindfulness', 'Questioning & Exploring'] },
+  { id: 'justbe', emoji: '🌙', name: 'Just Be', tagline: 'Presence & company', color: 'var(--vibe-justbe, #54648A)', channels: ['Late Night Chat', 'No Agenda', 'Introvert Space', 'Simply Present'] },
+  { id: 'open', emoji: '✨', name: 'Open', tagline: 'Type your own vibe', color: 'var(--vibe-open, #C9956A)', channels: [] }
 ];
 
 export default function Home() {
-  const [selectedVibe, setSelectedVibe] = useState(null);
-  const [customInterest, setCustomInterest] = useState('');
+  const [activeVibe, setActiveVibe] = useState(null);
+  const [selectedChannel, setSelectedChannel] = useState(null);
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
-  const handleSelectVibe = (vibe) => {
-    setSelectedVibe(vibe);
-    setCustomInterest('');
+  const handleVibeClick = (vibe) => {
+    if (activeVibe?.id === vibe.id) {
+      setActiveVibe(null);
+      setSelectedChannel(null);
+    } else {
+      setActiveVibe(vibe);
+      setSelectedChannel(null);
+    }
   };
 
-  const handleJoin = () => {
-    const vibeToJoin = selectedVibe || customInterest.trim();
-    if (!vibeToJoin) return;
-    navigate(`/dashboard/${encodeURIComponent(vibeToJoin)}`);
+  const handleEnter = () => {
+    const destination = selectedChannel && activeVibe.id !== 'open'
+      ? `${activeVibe.name} · ${selectedChannel}`
+      : selectedChannel || activeVibe.name;
+    navigate(`/dashboard/${encodeURIComponent(destination)}`);
   };
 
   return (
     <div className="home-container">
       <header className="home-header">
         <div className="brand-logo">
-          <span className="logo-icon">✨</span>
+          <span className="logo-icon">✦</span>
           <h1 className="logo-text">VibeMatch</h1>
         </div>
         <div className="user-info">
-          <span className="user-greeting">Hi, {user?.displayName || 'Friend'} 👋</span>
-          <button className="logout-btn" onClick={logout}>Sign Out</button>
+          <span className="user-greeting">
+            {user?.displayName?.split(' ')[0] || 'Welcome'}
+          </span>
+          <button className="logout-btn" onClick={logout}>Leave</button>
         </div>
       </header>
 
       <main className="vibe-select-main">
-        <div className="vibe-select-header">
-          <h2>What's your vibe right now?</h2>
-          <p>Choose a category or type anything — we'll find your people.</p>
+        <div className="vibe-hero">
+          <p className="vibe-question editorial">Something brought you here tonight.</p>
+          <p className="vibe-sub">Where do you need to be?</p>
         </div>
 
-        <div className="vibe-categories">
-          {vibeCategories.map((cat) => (
-            <div key={cat.group} className="vibe-category-block">
-              <h3 className="category-label">{cat.group}</h3>
-              <div className="vibe-chips">
-                {cat.vibes.map((vibe) => (
-                  <button
-                    key={vibe}
-                    className={`vibe-chip ${selectedVibe === vibe ? 'active' : ''}`}
-                    onClick={() => handleSelectVibe(vibe)}
-                  >
-                    {vibe}
-                  </button>
-                ))}
+        <div className="nine-vibes-grid">
+          {NINE_VIBES.map((vibe) => (
+            <button
+              key={vibe.id}
+              className={`vibe-card ${activeVibe?.id === vibe.id ? 'active' : ''}`}
+              onClick={() => handleVibeClick(vibe)}
+              style={{ '--vibe-color': vibe.color }}
+            >
+              <span className="vibe-emoji">{vibe.emoji}</span>
+              <div className="vibe-info">
+                <span className="vibe-name">{vibe.name}</span>
+                <span className="vibe-tagline">{vibe.tagline}</span>
               </div>
-            </div>
+            </button>
           ))}
         </div>
 
-        <div className="custom-vibe-section">
-          <div className="or-divider"><span>OR TYPE ANY VIBE</span></div>
-          <input
-            type="text"
-            className="input-field"
-            placeholder="E.g. 'Ugandan politics', 'Jazz music', 'Grief support'..."
-            value={customInterest}
-            onChange={(e) => { setCustomInterest(e.target.value); setSelectedVibe(null); }}
-          />
-        </div>
-
-        <div className="selected-vibe-bar">
-          {(selectedVibe || customInterest) ? (
-            <div className="selected-vibe-preview">
-              <span>Your vibe: <strong>{selectedVibe || customInterest}</strong></span>
-              <button className="btn-primary join-btn" onClick={handleJoin}>
-                Enter My Vibe Space →
+        {/* Channel Bottom Sheet */}
+        {activeVibe && (
+          <div className="channel-sheet">
+            <div className="channel-sheet-header">
+              <span className="channel-vibe-label">
+                {activeVibe.emoji} {activeVibe.name}
+              </span>
+              <p className="channel-prompt">Choose a channel, or enter the whole vibe.</p>
+            </div>
+            <div className="channel-list">
+              {activeVibe.id === 'open' ? (
+                <div style={{ padding: '0 20px', width: '100%' }}>
+                  <input 
+                    type="text" 
+                    placeholder="Enter any vibe or space..."
+                    value={selectedChannel || ''}
+                    onChange={e => setSelectedChannel(e.target.value)}
+                    style={{ width: '100%', padding: '16px', borderRadius: '12px', background: 'var(--bg-elevated)', border: '1px solid var(--border)', color: 'var(--text-primary)', fontSize: '1rem' }}
+                    autoFocus
+                  />
+                </div>
+              ) : (
+                activeVibe.channels.map((ch) => (
+                  <button
+                    key={ch}
+                    className={`channel-chip ${selectedChannel === ch ? 'active' : ''}`}
+                    onClick={() => setSelectedChannel(selectedChannel === ch ? null : ch)}
+                  >
+                    {ch}
+                  </button>
+                ))
+              )}
+            </div>
+            <div className="channel-enter-row">
+              <div className="enter-preview">
+                <span>Entering:</span>
+                <strong>{selectedChannel && activeVibe.id !== 'open' ? `${activeVibe.name} · ${selectedChannel}` : selectedChannel || activeVibe.name}</strong>
+              </div>
+              <button className="btn-primary enter-btn" onClick={handleEnter}>
+                Enter Fully →
               </button>
             </div>
-          ) : (
-            <div className="selected-vibe-placeholder">
-              Select a vibe above to get started ↑
-            </div>
-          )}
-        </div>
+          </div>
+        )}
+
+        {!activeVibe && (
+          <p className="select-hint">Tap any vibe to see its channels</p>
+        )}
       </main>
     </div>
   );
 }
-

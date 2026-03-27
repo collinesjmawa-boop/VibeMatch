@@ -3,6 +3,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 require('dotenv').config();
 
 const app = express();
@@ -16,6 +17,44 @@ const io = new Server(server, {
 
 app.use(cors());
 app.use(express.json());
+
+const CHANNEL_PROMPTS = {
+  "Grief & Loss": "You are a gentle listening presence in a grief space. You reflect, you ask soft questions, you never advise or diagnose.",
+  "Entrepreneurship": "You are a calm sounding board for founders. You ask clarifying questions, surface assumptions, never prescribe.",
+  "Late Night Chat": "You are a quiet, comforting presence. You listen and offer short, kind reflections.",
+  "default": "You are a gentle, listening presence. You hold space honestly and simply."
+};
+
+app.post('/api/ai-companion', async (req, res) => {
+  try {
+    const { vibe, channel, history } = req.body;
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(503).json({ error: "companion_unavailable" });
+    }
+    
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    
+    const geminiHistory = history.slice(0, -1).map(msg => ({
+      role: msg.role === 'ai' ? 'model' : 'user',
+      parts: [{ text: msg.text }]
+    }));
+    
+    const latestUserMsg = history[history.length - 1].text;
+    const systemInstruction = CHANNEL_PROMPTS[channel] || CHANNEL_PROMPTS[vibe] || CHANNEL_PROMPTS.default;
+    
+    const chat = model.startChat({
+      history: geminiHistory,
+      systemInstruction: { parts: [{ text: systemInstruction }] }
+    });
+    
+    const result = await chat.sendMessage(latestUserMsg);
+    res.json({ reply: result.response.text() });
+  } catch (error) {
+    console.error("AI Error:", error);
+    res.status(500).json({ error: "error" });
+  }
+});
 
 // Matchmaking queues: { "chill": [socket1, socket2], "ugandan politics": [socket3] }
 const queues = {};
@@ -84,6 +123,14 @@ io.on('connection', (socket) => {
     // In a full production app, you'd map UID to socket IDs.
     // For this trial, we'll broadcast to the vibe room, and only the target UID will show the popup.
     io.emit('receive_call_invite', { toUid, fromName, roomId, type, vibe });
+  });
+
+  socket.on('send_connection_request', (data) => {
+    socket.broadcast.emit('connection_request', data);
+  });
+  
+  socket.on('accept_connection_request', (data) => {
+    socket.broadcast.emit('connection_accepted', data);
   });
 
   socket.on('join_room', (roomId) => {

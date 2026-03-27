@@ -1,196 +1,221 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
+/* ============================================================
+   VibeMatch — Deep Ember Design System
+   Global CSS Variables + Base Styles
+   ============================================================ */
 
 :root {
-  /* Premium Light Mode Colors */
-  --bg-main: #f8fafc; /* Very light slate blue/grey */
-  --bg-surface: #ffffff;
-  --bg-glass: rgba(255, 255, 255, 0.85); /* Light glass */
-  
-  --text-main: #0f172a; /* Slate 900 for high contrast */
-  --text-muted: #64748b; /* Slate 500 */
-  
-  /* Mood Accents */
-  --accent-chill: #0ea5e9; /* Sky blue */
-  --accent-energy: #f43f5e; /* Rose */
-  --accent-romantic: #d946ef; /* Fuchsia */
-  --accent-focus: #10b981; /* Emerald */
-  --accent-default: #6366f1; /* Indigo */
+  /* ── Colour Palette ── */
+  --bg-primary:    #0D0D14;
+  --bg-surface:    #16161F;
+  --bg-elevated:   #1E1E2A;
+  --bg-glass:      rgba(22, 22, 31, 0.75);
 
-  /* UI Tokens */
-  --radius-lg: 24px;
-  --radius-md: 16px;
-  --radius-sm: 8px;
-  
-  /* Subtle light border */
-  --border-glass: 1px solid rgba(0, 0, 0, 0.05);
+  --accent-gold:   #C9956A;
+  --accent-gold-dim: rgba(201, 149, 106, 0.15);
+  --accent-sage:   #7D9E8C;
+  --accent-sage-dim: rgba(125, 158, 140, 0.15);
+  --accent-ember:  #D4685A;
+  --accent-ember-dim: rgba(212, 104, 90, 0.12);
 
-  /* Drop shadows for light mode */
-  --shadow-sm: 0 2px 4px rgba(0,0,0,0.02);
-  --shadow-md: 0 8px 16px rgba(0,0,0,0.04);
-  --shadow-lg: 0 16px 32px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.02);
+  --text-primary:  #EDE8DF;
+  --text-secondary: rgba(237, 232, 223, 0.6);
+  --text-muted:    rgba(237, 232, 223, 0.35);
+  --text-link:     #C9956A;
 
-  /* Container & Spacing */
-  --container-px: 32px;
-  --section-gap: 32px;
+  --border:        rgba(237, 232, 223, 0.08);
+  --border-glow:   rgba(201, 149, 106, 0.25);
 
-  /* Animation */
-  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* ── Typography ── */
+  --font-display:  'Cormorant Garamond', Georgia, serif;
+  --font-ui:       'DM Sans', system-ui, sans-serif;
+
+  /* ── Spacing & Radii ── */
+  --radius-sm:     6px;
+  --radius-md:     12px;
+  --radius-lg:     20px;
+  --radius-xl:     32px;
+
+  /* ── Shadows ── */
+  --shadow-card:   0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow-glow:   0 0 40px rgba(201, 149, 106, 0.12);
+
+  /* ── Transitions ── */
+  --ease:          cubic-bezier(0.4, 0, 0.2, 1);
+  --duration:      220ms;
 }
 
-@media (max-width: 768px) {
-  :root {
-    --container-px: 20px;
-    --section-gap: 24px;
-    --radius-lg: 20px;
-  }
-}
-
-@media (max-width: 600px) {
-  :root {
-    --container-px: 16px;
-    --section-gap: 20px;
-  }
-}
-
-* {
+/* ── Reset & Base ── */
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-body {
-  font-family: 'Outfit', 'Inter', -apple-system, sans-serif;
-  background-color: var(--bg-main);
-  color: var(--text-main);
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  min-height: 100vh;
-  overflow-x: hidden;
-  
-  /* Subtle mesh gradient background for light mode */
-  background-image: 
-    radial-gradient(at 0% 0%, hsla(253,16%,7%,0) 0, transparent 50%), 
-    radial-gradient(at 50% 0%, hsla(225,39%,30%,0.02) 0, transparent 50%), 
-    radial-gradient(at 100% 0%, hsla(339,49%,30%,0.02) 0, transparent 50%);
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
-/* Typography Utilities */
-h1, h2, h3, h4 {
-  font-family: 'Outfit', sans-serif;
-  font-weight: 700;
+body {
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.6;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+/* ── Typography Helpers ── */
+.editorial {
+  font-family: var(--font-display);
+  font-style: italic;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
   letter-spacing: -0.02em;
-  color: var(--text-main);
   line-height: 1.2;
 }
 
-h1 { font-size: 2.5rem; }
-h2 { font-size: 2rem; }
-h3 { font-size: 1.5rem; }
-
-@media (max-width: 768px) {
-  h1 { font-size: 2rem; }
-  h2 { font-size: 1.75rem; }
-  h3 { font-size: 1.25rem; }
+/* ── Scrollbars ── */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-gold-dim);
 }
 
-@media (max-width: 480px) {
-  h1 { font-size: 1.75rem; }
-  h2 { font-size: 1.5rem; }
-}
-
-/* Glassmorphism Classes (Light Mode Adaptation) */
-.glass-panel {
-  background: var(--bg-glass);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: var(--border-glass);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-}
-
-/* Dynamic Gradients based on Mood */
-.mood-gradient-chill {
-  background: radial-gradient(circle at 50% 0%, rgba(14, 165, 233, 0.08) 0%, transparent 60%);
-}
-.mood-gradient-energy {
-  background: radial-gradient(circle at 50% 0%, rgba(244, 63, 94, 0.08) 0%, transparent 60%);
-}
-.mood-gradient-romantic {
-  background: radial-gradient(circle at 50% 0%, rgba(217, 70, 239, 0.08) 0%, transparent 60%);
-}
-.mood-gradient-default {
-  background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
-}
-
-#root {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-/* Primary Button Structure */
-.btn-primary {
-  background: linear-gradient(135deg, var(--accent-default), #818cf8);
-  color: white;
-  border: none;
-  padding: 14px 28px;
-  border-radius: var(--radius-md);
-  font-family: 'Outfit', sans-serif;
-  font-weight: 600;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: var(--transition-fast);
-  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-}
-
-.btn-primary:not(:disabled):hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
-}
-
-.btn-primary:disabled {
-  opacity: 0.7;
-}
-
-/* Inputs */
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.input-field {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  color: var(--text-main);
-  padding: 14px 20px;
-  border-radius: var(--radius-md);
-  font-family: 'Inter', sans-serif;
-  font-size: 1rem;
-  width: 100%;
-  transition: var(--transition-fast);
-  outline: none;
-  box-shadow: var(--shadow-sm);
-}
-
-.input-field::placeholder {
-  color: #94a3b8;
-}
-
-.input-field:focus {
-  border-color: var(--accent-default);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-}
-
+/* ── Loading Screen ── */
 .loading-screen {
-  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--accent-default);
-  background: white;
+  height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.2rem;
+  letter-spacing: 0.1em;
+}
+
+/* ── Global Button Base ── */
+button {
+  font-family: var(--font-ui);
+  cursor: pointer;
+  border: none;
+  background: none;
+  transition: all var(--duration) var(--ease);
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── Primary Button ── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: var(--accent-gold);
+  color: var(--bg-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.03em;
+  border-radius: var(--radius-md);
+  border: none;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #d9a57a;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(201, 149, 106, 0.3);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* ── Ghost Button ── */
+.btn-ghost {
+  padding: 10px 20px;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  border-color: var(--border-glow);
+  color: var(--text-primary);
+  background: var(--accent-gold-dim);
+}
+
+/* ── Input Base ── */
+input, textarea {
+  font-family: var(--font-ui);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  padding: 12px 16px;
+  width: 100%;
+  font-size: 0.95rem;
+  transition: border-color var(--duration) var(--ease),
+              box-shadow var(--duration) var(--ease);
+  outline: none;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted);
+}
+
+input:focus, textarea:focus {
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 3px var(--accent-gold-dim);
+}
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-md);
+  padding: 14px 20px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  box-shadow: var(--shadow-card);
+  animation: slideInToast 0.3s var(--ease) forwards;
+}
+
+@keyframes slideInToast {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Utility ── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border-width: 0;
 }
