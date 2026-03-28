@@ -11,12 +11,24 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "*", // Allow all during debug
-    methods: ["GET", "POST"]
+    methods: ["GET", "POST", "OPTIONS"]
   }
 });
 
-// Configure Express CORS to be equally flexible
-app.use(cors()); // Allow all origins during debugging phase
+// 📡 Request Logger for Debugging
+app.use((req, res, next) => {
+  console.log(`📡 [INCOMING] ${req.method} ${req.url} from ${req.headers.origin || 'No Origin'}`);
+  next();
+});
+
+// 🛡️ Robust CORS configuration
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  credentials: true
+}));
+
 app.use(express.json());
 
 // ── Root & Health Check (Moved to Top) ──────────────────

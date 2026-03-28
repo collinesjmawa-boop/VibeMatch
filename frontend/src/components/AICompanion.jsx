@@ -29,6 +29,14 @@ export default function AICompanion({ vibe, channel }) {
       
       console.log("✦ AI Companion reaching out to:", BACKEND_URL);
       
+      // 🧪 Final Diagnostic: Try a GET check first to see if the "pipe" is open
+      try {
+        const testRes = await fetch(`${BACKEND_URL}/api/ai-companion`);
+        console.log("✦ Diagnostic GET Check:", testRes.ok ? "Success" : "Failed");
+      } catch (e) {
+        console.error("✦ Diagnostic GET Check failed:", e);
+      }
+      
       const res = await fetch(`${BACKEND_URL}/api/ai-companion`, {
         method: 'POST',
         mode: 'cors',
