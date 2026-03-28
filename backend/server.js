@@ -52,6 +52,14 @@ app.get('/api/health', (req, res) => {
   res.json({ status: "ok", message: "VibeMatch Backend is breathing.", time: new Date().toISOString() });
 });
 
+// Explicitly handle browser OPTIONS checks for pre-flight
+app.options('*', cors());
+
+app.get('/api/ai-companion', (req, res) => {
+  console.log("✦ AI Diagnostic: GET Request received.");
+  res.json({ status: "ready", info: "The AI endpoint is reachable via GET. Browser connections should work." });
+});
+
 app.post('/api/ai-companion', async (req, res) => {
   try {
     const { vibe, channel, history } = req.body;

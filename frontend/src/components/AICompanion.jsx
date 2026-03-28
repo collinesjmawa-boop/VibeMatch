@@ -31,6 +31,7 @@ export default function AICompanion({ vibe, channel }) {
       
       const res = await fetch(`${BACKEND_URL}/api/ai-companion`, {
         method: 'POST',
+        mode: 'cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           vibe,
