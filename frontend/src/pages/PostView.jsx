@@ -27,7 +27,7 @@ export default function PostView() {
     fetchPost();
   }, [postId]);
 
-  if (loading) return <div className="loading-screen">✨ Shuffling through the Vibe Wall...</div>;
+  if (loading) return <div className="loading-screen">✦ Shuffling through the Vibe Wall...</div>;
   if (!post) return (
     <div className="error-view">
       <h2>Vibe Not Found! 💨</h2>
@@ -40,43 +40,45 @@ export default function PostView() {
     <div className="post-view-container">
       <header className="post-view-header">
         <div className="brand" onClick={() => navigate('/')}>
-          <span className="logo">✨</span>
+          <span className="logo">✦</span>
           <h1>VibeMatch</h1>
         </div>
         <button className="join-btn-top" onClick={() => navigate('/auth')}>Join This Vibe</button>
       </header>
 
       <main className="post-view-main">
-        <div className="post-card standalone">
+        <article className="post-card standalone">
           <div className="vibe-tag">Vibe: <strong>{post.vibe}</strong></div>
           
-          <div className="post-header">
+          <header className="post-header">
             <div className="post-avatar">{post.authorName?.charAt(0)}</div>
             <div className="post-meta">
               <span className="author">{post.authorName}</span>
-              <span className="time">{new Date(post.createdAt).toLocaleDateString()}</span>
+              <span className="time">{new Date(post.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
             </div>
-          </div>
+          </header>
 
-          <div className="post-body">
+          <section className="post-body">
             <p className="post-content">{post.content}</p>
-          </div>
+          </section>
 
-          <div className="guest-footer">
+          <footer className="guest-footer">
             <div className="guest-stats">
-              <span>❤️ {post.reactions?.love?.length || 0}</span>
-              <span>👍 {post.reactions?.like?.length || 0}</span>
-              <span>💬 {post.comments?.length || 0}</span>
+              <span>✦ {post.resonances?.length || 0} resounded</span>
+              <span>📤 {post.shares || 0} shared</span>
             </div>
             
             <div className="cta-box">
-              <p>Want to react or join the conversation?</p>
-              <button className="btn-primary" onClick={() => navigate('/auth')}>
-                Register to Join the {post.vibe} Vibe →
+              <p>Someone shared this moment from the {post.vibe} space.</p>
+              <button className="btn-primary" style={{ width: '100%', justifyContent: 'center' }} onClick={() => navigate('/auth')}>
+                Register to Join the Conversation →
+              </button>
+              <button className="btn-ghost" style={{ width: '100%', marginTop: '12px' }} onClick={() => navigate('/')}>
+                Browse Other Vibes
               </button>
             </div>
-          </div>
-        </div>
+          </footer>
+        </article>
       </main>
     </div>
   );

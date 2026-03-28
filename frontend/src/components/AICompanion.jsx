@@ -27,6 +27,8 @@ export default function AICompanion({ vibe, channel }) {
       // Remove trailing slash if present
       if (BACKEND_URL.endsWith('/')) BACKEND_URL = BACKEND_URL.slice(0, -1);
       
+      console.log("✦ AI Companion reaching out to:", BACKEND_URL);
+      
       const res = await fetch(`${BACKEND_URL}/api/ai-companion`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -38,12 +40,19 @@ export default function AICompanion({ vibe, channel }) {
       });
       const data = await res.json();
       if (data.error) {
-        setMessages([...newMessages, { role: 'ai', text: "I'm sorry, I seem to be unavailable right now." }]);
+        const errorText = data.error === 'companion_unavailable' 
+          ? "I'm sorry, my source of thought (API Key) is missing from the environment."
+          : `I'm sorry, I encountered an error: ${data.error}`;
+        setMessages([...newMessages, { role: 'ai', text: errorText }]);
       } else {
         setMessages([...newMessages, { role: 'ai', text: data.reply }]);
       }
     } catch (err) {
-      console.error("AI Companion Error:", err);
+      console.error("✦ AI Companion Connection Error:", err);
+      // Log more details if possible
+      if (err instanceof TypeError) {
+        console.warn("Possible CORS or Mixed Content (HTTP vs HTTPS) issue.");
+      }
       setMessages([...newMessages, { role: 'ai', text: "I've lost my connection to the space..." }]);
     }
     setLoading(false);

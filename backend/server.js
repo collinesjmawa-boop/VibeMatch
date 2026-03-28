@@ -10,29 +10,32 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: (origin, callback) => {
-      // Allow any vercel subdomain or localhost
-      if (!origin || origin.includes('.vercel.app') || origin.includes('localhost')) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
+    origin: "*", // Allow all during debug
     methods: ["GET", "POST"]
   }
 });
 
 // Configure Express CORS to be equally flexible
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || origin.includes('.vercel.app') || origin.includes('localhost')) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  }
-}));
+app.use(cors()); // Allow all origins during debugging phase
 app.use(express.json());
+
+// ── Root & Health Check (Moved to Top) ──────────────────
+app.get('/', (req, res) => {
+  res.send('✦ VibeMatch API is online. Please use /api/health for status.');
+});
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: "ok", message: "VibeMatch Backend is breathing.", time: new Date().toISOString() });
+});
+
+// ── Global Error Handlers ──────────────────────────────
+process.on('uncaughtException', (err) => {
+  console.error("FATAL: Uncaught Exception:", err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error("FATAL: Unhandled Rejection at:", promise, "reason:", reason);
+});
 
 const CHANNEL_PROMPTS = {
   "Grief & Loss": "You are a gentle listening presence in a grief space. You reflect, you ask soft questions, you never advise or diagnose.",
@@ -40,6 +43,14 @@ const CHANNEL_PROMPTS = {
   "Late Night Chat": "You are a quiet, comforting presence. You listen and offer short, kind reflections.",
   "default": "You are a gentle, listening presence. You hold space honestly and simply."
 };
+
+app.get('/', (req, res) => {
+  res.send('✦ VibeMatch API is online. Please use /api/health for status.');
+});
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: "ok", message: "VibeMatch Backend is breathing.", time: new Date().toISOString() });
+});
 
 app.post('/api/ai-companion', async (req, res) => {
   try {
@@ -52,8 +63,16 @@ app.post('/api/ai-companion', async (req, res) => {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     
-    const geminiHistory = history.slice(0, -1).map(msg => ({
-      role: msg.role === 'ai' ? 'model' : 'user',
+    // Gemini history MUST start with a 'user' message. 
+    // We filter the history to start from the first 'user' message.
+    const userFirstHistory = history.slice(0, -1).reduce((acc, msg) => {
+      if (acc.length === 0 && msg.role !== 'user') return acc;
+      acc.push(msg);
+      return acc;
+    }, []);
+
+    const geminiHistory = userFirstHistory.map(msg => ({
+      role: msg.role === 'ai' || msg.role === 'model' ? 'model' : 'user',
       parts: [{ text: msg.text }]
     }));
     
@@ -68,8 +87,8 @@ app.post('/api/ai-companion', async (req, res) => {
     const result = await chat.sendMessage(latestUserMsg);
     res.json({ reply: result.response.text() });
   } catch (error) {
-    console.error("AI Error:", error);
-    res.status(500).json({ error: "error" });
+    console.error("AI Error:", error.message || error);
+    res.status(500).json({ error: error.message || "Failed to get AI response" });
   }
 });
 

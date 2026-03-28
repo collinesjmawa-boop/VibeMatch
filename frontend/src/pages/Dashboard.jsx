@@ -10,6 +10,7 @@ import { socket } from '../socket';
 import WaitlistModal from '../components/WaitlistModal';
 import ReportModal from '../components/ReportModal';
 import AICompanion from '../components/AICompanion';
+import VibeClips from '../components/VibeClips';
 
 import './Dashboard.css';
 
@@ -33,6 +34,7 @@ export default function Dashboard() {
 
   const [waitlistOpts, setWaitlistOpts] = useState(null); // { title: '', subtitle: '' }
   const [reportOpts, setReportOpts] = useState(null);     // { targetUid, contentSnapshot }
+  const [showVibeClips, setShowVibeClips] = useState(false);
 
   // ── Data State ────────────────────────────────────────────
   const [activeUsers, setActiveUsers] = useState([]);
@@ -253,6 +255,24 @@ export default function Dashboard() {
     await updateDoc(postRef, { saves: arrayUnion(user?.uid) });
   };
 
+  const handleSharePost = async (post) => {
+    const publicUrl = `${window.location.origin}/post/${post.id}`;
+    try {
+      await navigator.clipboard.writeText(publicUrl);
+      
+      // Increment share count in Firestore
+      const postRef = doc(db, 'vibe_posts', post.id);
+      await updateDoc(postRef, { 
+        shares: (post.shares || 0) + 1 
+      });
+      
+      alert(`Vibe link copied! \n${publicUrl}`);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+      alert("Sharing failed. Check your browser permissions.");
+    }
+  };
+
 
   // ── Render Helpers ────────────────────────────────────────
   // Calculate expiry percentage for arc
@@ -404,6 +424,16 @@ export default function Dashboard() {
           <div className="user-list">
             <span className="section-label">Online In This Space</span>
             
+            {!isGuestMode && (
+              <button 
+                className="vibe-clips-trigger-btn" 
+                onClick={() => setShowVibeClips(true)}
+                style={{ marginBottom: '12px' }}
+              >
+                📹 Share a Vibe Clip
+              </button>
+            )}
+
             {activeUsers.map(u => (
               <div key={u.uid} className="user-card" onClick={() => setSelectedUserIntro(u)}>
                 <div className="user-avatar">{u.name.charAt(0)}</div>
@@ -514,6 +544,15 @@ export default function Dashboard() {
                       🔖
                     </button>
 
+                    {/* Share */}
+                    <button 
+                      className="share-btn"
+                      onClick={() => handleSharePost(post)}
+                      title="Share this Vibe"
+                    >
+                      📤
+                    </button>
+
                     {post.authorId === user?.uid && (
                       <button 
                         className="preserve-btn" 
@@ -530,6 +569,7 @@ export default function Dashboard() {
           </div>
         </section>
       </main>
+      {showVibeClips && <VibeClips vibe={parentVibe} channel={channelName} onClose={() => setShowVibeClips(false)} />}
     </div>
   );
 }

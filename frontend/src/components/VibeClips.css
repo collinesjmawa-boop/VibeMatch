@@ -1,0 +1,138 @@
+/* VibeClips.css — Media Recorder Styling */
+
+.vibe-clips-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13,13,20,0.95);
+  backdrop-filter: blur(12px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.vibe-clips-modal {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 36px;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: var(--shadow-card), var(--shadow-glow);
+  text-align: center;
+}
+
+.vibe-clips-modal h2 {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.vibe-clips-desc {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: 24px;
+}
+
+.vibe-clips-preview-container {
+  width: 320px;
+  height: 568px; /* 9:16 aspect ratio */
+  margin: 0 auto 24px;
+  background: #000;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.hidden-video {
+  display: none;
+}
+
+.vibe-clips-canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.recording-indicator {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  padding: 4px 10px;
+  background: var(--accent-ember);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 0.85rem;
+  animation: pulse 1s infinite alternate ease-in-out;
+}
+
+@keyframes pulse {
+  from { opacity: 0.8; }
+  to { opacity: 1; }
+}
+
+.recording-prompt {
+  position: absolute;
+  bottom: 24px;
+  left: 0; right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.record-btn {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--duration) var(--ease);
+}
+
+.record-inner {
+  width: 44px;
+  height: 44px;
+  background: var(--accent-ember);
+  border-radius: 50%;
+  transition: all var(--duration) var(--ease);
+}
+
+.record-btn:hover {
+  transform: scale(1.1);
+  border-color: var(--accent-gold);
+}
+
+.record-btn:active .record-inner {
+  transform: scale(0.85);
+}
+
+.vibe-clips-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.watermark-info {
+  margin-top: 24px;
+  font-size: 0.75rem;
+  color: var(--accent-gold);
+  font-family: var(--font-display);
+  font-style: italic;
+  opacity: 0.8;
+}
+
+.close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-size: 1.25rem;
+  color: var(--text-muted);
+}

@@ -261,7 +261,7 @@
   font-weight: 500;
   color: var(--text-primary);
   margin-bottom: 4px;
-  truncate: ellipsis;
+  text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -657,6 +657,21 @@
 .save-btn.saved {
   color: var(--accent-gold);
   border-color: rgba(201,149,106,0.3);
+}
+
+.share-btn {
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+}
+
+.share-btn:hover {
+  border-color: var(--border-glow);
+  color: var(--text-primary);
+  background: var(--accent-gold-dim);
 }
 
 /* Continue / Continuation */
