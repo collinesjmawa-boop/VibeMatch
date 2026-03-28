@@ -8,9 +8,23 @@ require('dotenv').config();
 
 const app = express();
 const server = http.createServer(app);
+
+// 🛡️ [FORCE HEADERS] - Manually push CORS to the absolute top of the stack
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  
+  // Respond to Pre-flight (OPTIONS) instantly
+  if (req.method === 'OPTIONS') {
+    return res.status(200).send();
+  }
+  next();
+});
+
 const io = new Server(server, {
   cors: {
-    origin: "*", // Allow all during debug
+    origin: "*", 
     methods: ["GET", "POST", "OPTIONS"]
   }
 });
@@ -20,14 +34,6 @@ app.use((req, res, next) => {
   console.log(`📡 [INCOMING] ${req.method} ${req.url} from ${req.headers.origin || 'No Origin'}`);
   next();
 });
-
-// 🛡️ Robust CORS configuration
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  credentials: true
-}));
 
 app.use(express.json());
 
